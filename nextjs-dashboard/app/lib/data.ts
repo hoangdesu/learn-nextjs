@@ -21,6 +21,7 @@ export async function fetchRevenue() {
     // console.log('Fetching revenue data...');
     // await new Promise((resolve) => setTimeout(resolve, 3000));
 
+    // calling sql queries directly in server components
     const data = await sql<Revenue>`SELECT * FROM revenue`;
 
     // console.log('Data fetch completed after 3 seconds.');
@@ -45,6 +46,8 @@ export async function fetchLatestInvoices() {
       ...invoice,
       amount: formatCurrency(invoice.amount),
     }));
+    // console.log('latestInvoices', latestInvoices);
+    
     return latestInvoices;
   } catch (error) {
     console.error('Database Error:', error);
@@ -64,11 +67,17 @@ export async function fetchCardData() {
          SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
          FROM invoices`;
 
+    // The returned promise fulfills when all of the input's promises fulfill
+    // Using Promise.all() to avoid 'request waterfall' -> fetch all in parallel
+    // do not use await above to extract the resolve data. 
+    // Instead, pass in all the promises and await for them all at once
     const data = await Promise.all([
       invoiceCountPromise,
       customerCountPromise,
       invoiceStatusPromise,
     ]);
+
+    // console.log('invoiceCount:', data[0]);
 
     const numberOfInvoices = Number(data[0].rows[0].count ?? '0');
     const numberOfCustomers = Number(data[1].rows[0].count ?? '0');
