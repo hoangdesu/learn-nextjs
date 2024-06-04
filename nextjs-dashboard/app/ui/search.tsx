@@ -2,15 +2,16 @@
 
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useDebouncedCallback } from 'use-debounce';
 
 export default function Search({ placeholder }: { placeholder: string }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace: replaceUrl } = useRouter(); // make sure dont import from 'next/router'!
 
-  const handleSearch = (searchTerm: string) => {
+  const handleSearch = useDebouncedCallback((searchTerm: string) => {
     // construct new params from the URL
-    const params = new URLSearchParams(searchParams); 
+    const params = new URLSearchParams(searchParams);
 
     // set params string from user input
     if (searchTerm) {
@@ -19,13 +20,13 @@ export default function Search({ placeholder }: { placeholder: string }) {
       params.delete('query');
     }
 
-    // console.log('term:', searchTerm);
+    console.log('searching... ', searchTerm);
     // console.log(params.get('query'));
 
     replaceUrl(`${pathname}?${params.toString()}`); // make sure to append to the current pathname, otherwise app will cause error redirect
 
     // produce URL from user input -> http://localhost:42069/dashboard/invoices?query=abc123
-  };
+  }, 400);
 
   return (
     <div className="relative flex flex-1 flex-shrink-0">
