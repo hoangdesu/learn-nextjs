@@ -62,7 +62,6 @@ export async function updateInvoice(id: string, formData: FormData) {
   console.log('> updatating invoice id:', id);
 
   // extract data from form and validate types with Zod
-
   const { customerId, amount, status } = UpdateInvoice.parse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
@@ -82,4 +81,10 @@ export async function updateInvoice(id: string, formData: FormData) {
 
   // redirect user after back to invoices table after successful edit
   redirect('/dashboard/invoices');
+}
+
+export async function deleteInvoice(id: string) {
+  await sql`DELETE FROM invoices WHERE id = ${id}`;
+  revalidatePath('/dashboard/invoices');
+  console.log('> Deleted invoice', id);
 }
