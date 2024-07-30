@@ -44,10 +44,16 @@ export async function createInvoice(formData: FormData) {
     date,
   );
 
-  await sql`
+  try {
+    await sql`
     INSERT INTO invoices (customer_id, amount, status, date)
     VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
   `;
+  } catch (err) {
+    return {
+      message: 'Database error: Failed to create invoice.',
+    };
+  }
 
   // clear this cache and trigger a new request to the server (fresh data)
   revalidatePath('/dashboard/invoices');
@@ -70,21 +76,37 @@ export async function updateInvoice(id: string, formData: FormData) {
 
   const amountInCents = amount * 100;
 
-  await sql`
+  try {
+    await sql`
       UPDATE invoices
       SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
       WHERE id = ${id}
     `;
+  } catch (err) {
+    return {
+      message: 'Database error: Failed to update invoice.',
+    };
+  }
 
   // clear the client cache, ensure fresh data from server
   revalidatePath('/dashboard/invoices');
 
   // redirect user after back to invoices table after successful edit
+  // redirect() internally THROWS an error => so it should be called outside of try/catch blocks
   redirect('/dashboard/invoices');
 }
 
 export async function deleteInvoice(id: string) {
-  await sql`DELETE FROM invoices WHERE id = ${id}`;
-  revalidatePath('/dashboard/invoices');
-  console.log('> Deleted invoice', id);
+  // only for testing error handling
+  throw new Error('Failed to delete invoice')
+
+  try {
+    await sql`DELETE FROM invoices WHERE id = ${id}`;
+    revalidatePath('/dashboard/invoices');
+    console.log('> Deleted invoice', id);
+  } catch (err) {
+    return {
+      message: 'Database error: Failed to delete invoice.',
+    };
+  }
 }
