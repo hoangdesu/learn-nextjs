@@ -1,8 +1,9 @@
 import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 import { fetchCustomers, fetchInvoiceById } from '@/app/lib/data';
 import Form from '@/app/ui/invoices/edit-form';
+import { notFound } from 'next/navigation';
 
-export default async function EditInvoiceIdPage({
+export default async function EditInvoicePage({
   params,
 }: {
   params: { id: string };
@@ -14,8 +15,15 @@ export default async function EditInvoiceIdPage({
     fetchCustomers(),
   ]);
 
-//   console.log(invoice, customers);
-  
+  // - Throws error when an invoice is not found
+  // - Show UI from file not-found.tsx
+  // - Handle a more specific error
+  if (!invoice) {
+    notFound();
+  }
+
+  // console.log(invoice, customers);
+
   return (
     <main>
       <Breadcrumbs
