@@ -7,15 +7,21 @@ import { redirect } from 'next/navigation';
 
 const FormSchema = z.object({
   id: z.string(),
-  customerId: z.string(),
-  amount: z.coerce.number(),
-  status: z.enum(['pending', 'paid']),
+  customerId: z.string({
+    invalid_type_error: 'Please select a customer.',
+  }),
+  amount: z.coerce
+    .number()
+    .gt(0, { message: 'Please enter an amount greater than $0.' }),
+  status: z.enum(['pending', 'paid'], {
+    invalid_type_error: 'Please select an invoice status.',
+  }),
   date: z.string(),
 });
 
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 
-export async function createInvoice(formData: FormData) {
+export async function createInvoice(prevState: FormState, formData: FormData) {
   // const rawFormData = {
   //   customerId: formData.get('customerId'),
   //   amount: formData.get('amount'),
@@ -24,11 +30,25 @@ export async function createInvoice(formData: FormData) {
   // Test it out:
   // console.log(rawFormData);
 
-  const { customerId, amount, status } = CreateInvoice.parse({
+  // const { customerId, amount, status } = CreateInvoice.parse({ 
+  // -> use safeParse() instead to have returned success or error fields
+  // -> handle better, no need try/catch
+
+  const validatedFields = CreateInvoice.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
     status: formData.get('status'),
   });
+
+  console.log(validatedFields);
+  
+  // Return early if the form data is invalid
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing fields. Failed to create invoice.'
+    }
+  }
 
   // good practice to store monetary values in cents in database to eliminate JavaScript floating-point errors and ensure greater accuracy.
   const amountInCents = amount * 100;
@@ -98,7 +118,7 @@ export async function updateInvoice(id: string, formData: FormData) {
 
 export async function deleteInvoice(id: string) {
   // only for testing error handling
-  throw new Error('Failed to delete invoice')
+  // throw new Error('Failed to delete invoice');
 
   try {
     await sql`DELETE FROM invoices WHERE id = ${id}`;
@@ -110,3 +130,12 @@ export async function deleteInvoice(id: string) {
     };
   }
 }
+
+export type FormState = {
+  message?: string | null;
+  errors?: {
+    customerId?: string[];
+    amount?: string[];
+    status?: string[];
+  };
+};
