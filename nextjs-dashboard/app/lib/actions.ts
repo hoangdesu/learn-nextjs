@@ -30,7 +30,7 @@ export async function createInvoice(prevState: FormState, formData: FormData) {
   // Test it out:
   // console.log(rawFormData);
 
-  // const { customerId, amount, status } = CreateInvoice.parse({ 
+  // const { customerId, amount, status } = CreateInvoice.parse({
   // -> use safeParse() instead to have returned success or error fields
   // -> handle better, no need try/catch
 
@@ -40,19 +40,19 @@ export async function createInvoice(prevState: FormState, formData: FormData) {
     status: formData.get('status'),
   });
 
-  console.log(validatedFields);
-  
-  // Return early if the form data is invalid
+  console.log(validatedFields); // { success: false, error: [Getter] }
+
+  // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing fields. Failed to create invoice.'
-    }
+      message: 'Missing fields. Failed to create invoice.',
+    };
   }
 
-  // good practice to store monetary values in cents in database to eliminate JavaScript floating-point errors and ensure greater accuracy.
-  const amountInCents = amount * 100;
-
+  // Prepare data to insert into database
+  const { customerId, amount, status } = validatedFields.data;
+  const amountInCents = amount * 100; // good practice to store monetary values in cents in database to eliminate JavaScript floating-point errors and ensure greater accuracy.
   const date = new Date().toISOString().split('T')[0]; // get current date in YYYY-MM-DD
 
   console.log(
@@ -64,6 +64,7 @@ export async function createInvoice(prevState: FormState, formData: FormData) {
     date,
   );
 
+  // insert datata into the db
   try {
     await sql`
     INSERT INTO invoices (customer_id, amount, status, date)
