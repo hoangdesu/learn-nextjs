@@ -1,0 +1,31 @@
+@baseUrl = http://localhost:42069/api
+
+# @name getSeedUser
+GET {{baseUrl}}/seed/user
+
+###
+
+# @name seedNewUser
+POST http://localhost:42069/api/seed/user
+Content-Type: application/json
+
+{
+    "name": "admin1",
+    "email": "admin@admin.com",
+    "password": "admin1"
+}
+
+###
+
+# @name getAllUsers
+GET {{baseUrl}}/users
+
+### 
+
+# @name deleteUser
+DELETE {{baseUrl}}/users
+Content-Type: application/json
+
+{
+    "email": "admin@admin.com"
+}

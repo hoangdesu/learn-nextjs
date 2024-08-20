@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { signIn } from '@/auth';
 
 const FormSchema = z.object({
   id: z.string(),
@@ -85,7 +86,11 @@ export async function createInvoice(prevState: FormState, formData: FormData) {
 
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 
-export async function updateInvoice(id: string, prevState: FormState, formData: FormData) {
+export async function updateInvoice(
+  id: string,
+  prevState: FormState,
+  formData: FormData,
+) {
   console.log('> updating invoice id:', id);
 
   // extract data from form and validate types with Zod
@@ -96,12 +101,11 @@ export async function updateInvoice(id: string, prevState: FormState, formData: 
     status: formData.get('status'),
   });
 
-
   if (!validatedFields.success) {
     return {
       message: 'Missing fields. Failed to edit invoice.',
       errors: validatedFields.error.flatten().fieldErrors,
-    }
+    };
   }
   const { customerId, amount, status } = validatedFields.data;
 
@@ -150,3 +154,15 @@ export type FormState = {
     status?: string[];
   };
 };
+
+// TODO: fix not yet working
+export async function authenticateUser(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  try {
+    await signIn('credentials', formData);
+  } catch (err) {
+    return 'Invalid credentials.';
+  }
+}

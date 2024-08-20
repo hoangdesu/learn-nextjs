@@ -5,9 +5,12 @@ export const authConfig = {
     signIn: '/login',
   },
   callbacks: {
+    // Nextjs middleware
+    // called before a request is completed
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
+      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard'); // ensure AUTH_URL in .env has correct port
+      // protect the dashboard route
       if (isOnDashboard) {
         if (isLoggedIn) return true;
         else return false; // Redirect unauthenticated users to login page
