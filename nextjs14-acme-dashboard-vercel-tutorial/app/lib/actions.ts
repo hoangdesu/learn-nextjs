@@ -161,7 +161,7 @@ export async function authenticateUser(
   formData: FormData,
 ) {
   try {
-    await signIn('credentials', formData);
+    await signIn('credentials', formData); // 'credentials' is an option for providers
   } catch (err) {
     if (err instanceof AuthError) {
       switch (err.type) {

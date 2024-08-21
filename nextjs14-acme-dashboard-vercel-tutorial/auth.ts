@@ -1,6 +1,6 @@
 import NextAuth from 'next-auth';
 import { authConfig } from './auth.config';
-import Credentials from 'next-auth/providers/credentials';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import { z } from 'zod';
 import { User } from './app/lib/definitions';
 import { sql } from '@vercel/postgres';
@@ -20,8 +20,8 @@ export const { auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
     // we can list different login options here for providers eg. Google, Github
-    // Credentials allows users to log in with a username and a password
-    Credentials({
+    // Credentials Provider allows users to log in with a username and a password
+    CredentialsProvider({
       async authorize(credentials) {
         console.log(
           '>> credentials inside authorize function in auth.ts:',
