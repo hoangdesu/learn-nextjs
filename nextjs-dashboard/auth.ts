@@ -23,6 +23,11 @@ export const { auth, signIn, signOut } = NextAuth({
     // Credentials allows users to log in with a username and a password
     Credentials({
       async authorize(credentials) {
+        console.log(
+          '>> credentials inside authorize function in auth.ts:',
+          credentials,
+        );
+
         const parsedCredentials = z
           .object({
             email: z.string().email(),
@@ -31,14 +36,31 @@ export const { auth, signIn, signOut } = NextAuth({
           .safeParse(credentials);
 
         if (parsedCredentials.success) {
+          console.log('>> parsed successful');
+
           const { email, password } = parsedCredentials.data;
           const user = await getUser(email);
+          console.log('>> getUser:', user);
+
           if (!user) return null;
 
-          const passwordMatch = await bcrypt.compare(user.password, password);
-          if (passwordMatch) return user;
+          // const passwordMatch = await bcrypt.compare(user.password, password); => This will NOT work
+          // function compare(data: string | Buffer, encrypted: string)
+          // NOTE: when using bcrypt's compare, the params order DOES matter. It's not simply comparing param1 === param2.
+          // param1: plain-text password. param2: encrypted password
+
+          const passwordMatch = await bcrypt.compare(password, user.password);
+
+          if (passwordMatch) {
+            console.log('>> password matched');
+            return user;
+          } else {
+            console.log('>> password DIDNT matched!');
+            return null;
+          }
         }
 
+        console.error('>> Parse failed');
         console.error('Invalid credentials.');
         return null;
       },

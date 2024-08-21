@@ -11,9 +11,9 @@ import { Button } from './button';
 import { authenticateUser } from '../lib/actions';
 import { useFormState } from 'react-dom';
 import { useActionState } from 'react';
+import LinearProgress from './LinearProgress';
 
 export default function LoginForm() {
-  // TODO: fix not yet working
   const [errorMessage, formAction, isPending] = useActionState(
     authenticateUser,
     undefined,
@@ -66,19 +66,19 @@ export default function LoginForm() {
             </div>
           </div>
         </div>
-        <LoginButton />
+        <Button className="mt-4 w-full" aria-disabled={isPending}>
+          Log in <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
+        </Button>
         <div className="flex h-8 items-end space-x-1">
-          {/* Add form errors here */}
+          {isPending && <LinearProgress className="w-full" />}
+          {errorMessage && !isPending && (
+            <>
+              <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
+              <p className="text-sm text-red-500">{errorMessage}</p>
+            </>
+          )}
         </div>
       </div>
     </form>
-  );
-}
-
-function LoginButton() {
-  return (
-    <Button className="mt-4 w-full">
-      Log in <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
-    </Button>
   );
 }

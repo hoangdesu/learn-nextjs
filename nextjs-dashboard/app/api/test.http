@@ -10,9 +10,9 @@ POST http://localhost:42069/api/seed/user
 Content-Type: application/json
 
 {
-    "name": "admin1",
-    "email": "admin@admin.com",
-    "password": "admin1"
+    "name": "a",
+    "email": "a@b.com",
+    "password": "123456"
 }
 
 ###
