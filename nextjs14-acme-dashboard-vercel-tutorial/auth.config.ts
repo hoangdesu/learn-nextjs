@@ -10,11 +10,18 @@ export const authConfig = {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isOnDashboard = nextUrl.pathname.startsWith('/dashboard'); // ensure AUTH_URL in .env has correct port
-      // protect the dashboard route
-      if (isOnDashboard) {
-        if (isLoggedIn) return true;
-        else return false; // Redirect unauthenticated users to login page
+      const isOnApi = nextUrl.pathname.startsWith('/api');
+      // protect the /dashboard and /api routes
+      if (isOnDashboard || isOnApi) {
+        if (isLoggedIn) {
+          console.log('>> Logged in user:', auth?.user);
+          return true;
+        } else {
+          console.log('>> Not logged in:', auth, auth?.user);
+          return false; // Redirect unauthenticated users to login page
+        }
       } else if (isLoggedIn) {
+        // Redirect the user to dashboard after logged in successfully
         return Response.redirect(new URL('/dashboard', nextUrl));
       }
       return true;
