@@ -10,7 +10,10 @@ export const authConfig = {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isOnDashboard = nextUrl.pathname.startsWith('/dashboard'); // ensure AUTH_URL in .env has correct port
-      const isOnApi = nextUrl.pathname.startsWith('/api');
+      const isOnApi = nextUrl.pathname.startsWith('/api'); // ensure to remove middleware `api` route matcher to also protect the api route
+      
+      console.log('> start with:', nextUrl.pathname, isOnDashboard, isOnApi);
+
       // protect the /dashboard and /api routes
       if (isOnDashboard || isOnApi) {
         if (isLoggedIn) {

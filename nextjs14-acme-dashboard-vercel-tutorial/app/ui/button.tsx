@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 
+// Customizing native HTML button element
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
 }

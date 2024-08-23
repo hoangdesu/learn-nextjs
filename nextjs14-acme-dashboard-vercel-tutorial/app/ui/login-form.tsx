@@ -9,8 +9,7 @@ import {
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 import { authenticateUser } from '../lib/actions';
-import { useFormState } from 'react-dom';
-import { useActionState } from 'react';
+import { useActionState, useRef } from 'react';
 import LinearProgress from './LinearProgress';
 
 export default function LoginForm() {
@@ -19,8 +18,19 @@ export default function LoginForm() {
     undefined,
   );
 
+  const formRef = useRef<HTMLFormElement | null>(null);
+
+  const useDefaultAccount = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (formRef.current) {
+      const [email, password] = formRef.current;
+      (email as HTMLInputElement).value = 'user@nextmail.com';
+      (password as HTMLInputElement).value = '123456';
+    }
+  };
+
   return (
-    <form action={formAction} className="space-y-3">
+    <form action={formAction} className="space-y-3" ref={formRef}>
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
         <h1 className={`${lusitana.className} mb-3 text-2xl`}>
           Please log in to continue.
@@ -79,6 +89,12 @@ export default function LoginForm() {
           )}
         </div>
       </div>
+      <button
+        onClick={useDefaultAccount}
+        className="border-1 my-2 rounded-md border-slate-300 bg-yellow-100 px-4 py-2 text-sm transition-all hover:bg-yellow-200"
+      >
+        Use default account (user@nextmail.com:123456)
+      </button>
     </form>
   );
 }
