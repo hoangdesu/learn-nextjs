@@ -3,6 +3,11 @@ import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 import { fetchCustomers } from '@/app/lib/data';
 import { Suspense } from 'react';
 import LoadingPage from './loadingPage';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Create Invoice',
+};
 
 export default async function CreateInvoicePage() {
   const customers = await fetchCustomers();

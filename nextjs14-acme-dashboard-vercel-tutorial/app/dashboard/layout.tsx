@@ -1,5 +1,13 @@
 import { ReactNode } from 'react';
 import SideNav from '../ui/dashboard/sidenav';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: {
+    template: '%s | Acme Dashboard',
+    default: 'Home',
+  },
+};
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
