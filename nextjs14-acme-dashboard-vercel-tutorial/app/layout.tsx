@@ -13,8 +13,7 @@ export const metadata: Metadata = {
     default: 'Acme Dashboard | NextJS 14 Tutorial',
   },
   description: 'The official Next.js Course Dashboard, built with App Router.',
-  metadataBase: new URL('https://nextjs14-acme-dashboard.hoangdesu.com'), // set a base URL prefix that require a fully qualified URL
-  
+  metadataBase: new URL('https://nextjs14-dashboard.hoangdesu.com'), // set a base URL prefix that require a fully qualified URL
 };
 
 export default function RootLayout({
